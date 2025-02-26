@@ -1,3 +1,21 @@
+function formatRelativeDate(dateStr) {
+  const published = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - published;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+  const diffMonth = Math.floor(diffDay / 30);
+  const diffYear = Math.floor(diffDay / 365);
+  if (diffYear > 0) return diffYear + " years ago"; // 예: "2 years ago"
+  if (diffMonth > 0) return diffMonth + " months ago"; // 예: "9 months ago"
+  if (diffDay > 0) return diffDay + " days ago"; // 예: "2 days ago"
+  if (diffHour > 0) return diffHour + " hours ago";
+  if (diffMin > 0) return diffMin + " minutes ago";
+  return diffSec + " seconds ago";
+}
+
 const API_KEY = `07eb738ae18f4e42a9496b947b24b544`;
 let newsList = [];
 const getLatestNews = async () => {
@@ -16,27 +34,40 @@ const getLatestNews = async () => {
 };
 
 const render = () => {
-  const newsHTML = newsList.map(
-    (news) => ` <div class = "row news">
-          <div class = "col-lg-4">
-            <img class="news-img-size" src = ${news.urlToImage} />
+  const newsHTML = newsList
+    .map((news) => {
+      const summary = news.description
+        ? news.description.length > 200
+          ? news.description.slice(0, 200) + "…"
+          : news.description
+        : "내용없음";
+
+      const imageHTML = news.urlToImage
+        ? `<img class="news-img-size" src="${news.urlToImage}" alt="news image" />`
+        : `<div class="no-image">no image</div>`;
+
+      const sourceName = news.source && news.source.name ? news.source.name : "no source";
+
+      const publishedDate = news.publishedAt ? formatRelativeDate(news.publishedAt) : "";
+
+      return `<div class="row news">
+          <div class="col-lg-4">
+            ${imageHTML}
           </div>
-          <div class = "col-lg-8">
+          <div class="col-lg-8">
             <h2>${news.title}</h2>
-            <p>${news.description}</p>
-          <div>
-            ${news.source.name} * ${(news.publishedAt)}
-         </div>
-        </div>
-      </div>`
-  )
-  .join('');
+            <p>${summary}</p>
+            <div>
+              ${sourceName} * ${publishedDate}
+            </div>
+          </div>
+      </div>`;
+    })
+    .join("");
   document.getElementById("new-board").innerHTML = newsHTML;
 };
 
 getLatestNews();
-
-
 
 const hamburgerMenu = document.getElementById("hamburgerMenu");
 const sideMenu = document.getElementById("sideMenu");
