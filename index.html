@@ -11,9 +11,28 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" />
   </head>
   <body>
     <section class="container">
+      <div class="d-flex justify-content-between align-items-center mt-3" id="topRow">
+        <section class="search-container">
+          <div id="searchIcon" class="search-icon">
+            <i class="bi bi-search"></i>
+          </div>
+
+          <div id="searchBar" class="search-bar">
+            <input type="text" placeholder="Search..." />
+            <button>검색</button>
+          </div>
+        </section>
+
+        <div id="hamburgerMenu" class="hamburger-menu">
+          <i class="bi bi-list" style="font-size: 1.5rem"></i>
+        </div>
+      </div>
+
       <section>
         <div class="head-line">
           <svg viewBox="0 0 184 25" fill="#000">
@@ -40,20 +59,42 @@
           <button>Energy</button>
         </div>
       </section>
+
       <section id="new-board"></section>
-      <div class = "row news">
-        <div class = "col-lg-4">
-          <img class="news-img-size" src = "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTExMDJfMTUx%2FMDAxNjM1ODIxOTE2OTk0.Z5ERTv41LIysQ1n1LyrGyXRoCM0F6u8HBktg2XnNBIwg.ZU5dpe1BsGu-VzDbIvLY6SAtwCYmU8tD70juotmIVMsg.PNG.ksma1123%2F2021-11-02_11%253B57%253B38.PNG&type=sc960_832" />
+      <div class="row news">
+        <div class="col-lg-4">
+          <img
+            class="news-img-size"
+            src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTExMDJfMTUx%2FMDAxNjM1ODIxOTE2OTk0.Z5ERTv41LIysQ1n1LyrGyXRoCM0F6u8HBktg2XnNBIwg.ZU5dpe1BsGu-VzDbIvLY6SAtwCYmU8tD70juotmIVMsg.PNG.ksma1123%2F2021-11-02_11%253B57%253B38.PNG&type=sc960_832"
+          />
         </div>
-        <div class = "col-lg-8">
+        <div class="col-lg-8">
           <h2>타이틀</h2>
           <p>본문</p>
-        <div>
-         출처 * 2025-02-26
-       </div>
+          <div>출처 * 2025-02-26</div>
+        </div>
       </div>
-    </div>
     </section>
+
+    <div class="side-menu" id="sideMenu">
+      <ul>
+        <li>Sport</li>
+        <li>Tech</li>
+        <li>World</li>
+        <li>Finance</li>
+        <li>Politics</li>
+        <li>Business</li>
+        <li>Economics</li>
+        <li>Entertainment</li>
+        <li>Beauty</li>
+        <li>Travel</li>
+        <li>Music</li>
+        <li>Food</li>
+        <li>Science</li>
+        <li>Gaming</li>
+        <li>Energy</li>
+      </ul>
+    </div>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

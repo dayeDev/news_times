@@ -31,10 +31,22 @@ const render = () => {
       </div>`
   )
   .join('');
-
-
-
   document.getElementById("new-board").innerHTML = newsHTML;
 };
 
 getLatestNews();
+
+
+
+const hamburgerMenu = document.getElementById("hamburgerMenu");
+const sideMenu = document.getElementById("sideMenu");
+const searchIcon = document.getElementById("searchIcon");
+const searchBarDiv = document.getElementById("searchBar");
+
+hamburgerMenu.addEventListener("click", () => {
+  sideMenu.classList.toggle("open");
+});
+
+searchIcon.addEventListener("click", () => {
+  searchBarDiv.classList.toggle("active");
+});
