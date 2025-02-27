@@ -18,6 +18,31 @@ function formatRelativeDate(dateStr) {
 
 const API_KEY = `07eb738ae18f4e42a9496b947b24b544`;
 let newsList = [];
+
+const getNewsByCategory= async (event)=>{
+  const category = event.target.textContent;
+
+  const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`);
+
+  // 과제 제출용 api
+  `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
+
+  // 무료버전, 로컬에서만 api 가능
+  //`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`
+
+  const response = await fetch(url);
+  const data = await response.json();
+  console.log("category",data);
+  newsList = data.articles;
+  render();
+};
+
+
+const menus = document.querySelectorAll(".menus button");
+menus.forEach((menu) => {
+  menu.addEventListener("click",getNewsByCategory);
+});
+
 const getLatestNews = async () => {
   const url = new URL(
     // 과제 제출용 api
@@ -32,6 +57,8 @@ const getLatestNews = async () => {
   render();
   console.log("dddd", newsList);
 };
+
+
 
 const render = () => {
   const newsHTML = newsList
