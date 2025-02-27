@@ -1,3 +1,9 @@
+// 과제 제출용 api
+// `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
+
+// 무료버전, 로컬에서만 api 가능
+// `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`
+
 function formatRelativeDate(dateStr) {
   const published = new Date(dateStr);
   const now = new Date();
@@ -19,48 +25,45 @@ function formatRelativeDate(dateStr) {
 const API_KEY = `07eb738ae18f4e42a9496b947b24b544`;
 let newsList = [];
 
-const getNewsByCategory= async (event)=>{
+async function getNewsByCategory(event) {
   const category = event.target.textContent;
-
-  const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`);
-
-  // 과제 제출용 api
-  `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
-
-  // 무료버전, 로컬에서만 api 가능
-  //`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`
-
+  //과제 제출용 api
+  const url = new URL(
+    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
+  );
   const response = await fetch(url);
   const data = await response.json();
-  console.log("category",data);
+  console.log("category", data);
   newsList = data.articles;
   render();
-};
-
+}
 
 const menus = document.querySelectorAll(".menus button");
 menus.forEach((menu) => {
-  menu.addEventListener("click",getNewsByCategory);
+  menu.addEventListener("click", getNewsByCategory);
 });
 
-const getLatestNews = async () => {
+const sideMenuItems = document.querySelectorAll("#sideMenu ul li");
+sideMenuItems.forEach((item) => {
+  item.addEventListener("click", getNewsByCategory);
+  item.addEventListener("click", () => {
+    sideMenu.classList.remove("open");
+  });
+});
+
+async function getLatestNews() {
   const url = new URL(
     // 과제 제출용 api
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
-
-    // 무료버전, 로컬에서만 api 가능
-    //`https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`
   );
   const response = await fetch(url);
   const data = await response.json();
   newsList = data.articles;
   render();
   console.log("dddd", newsList);
-};
+}
 
-
-
-const render = () => {
+function render() {
   const newsHTML = newsList
     .map((news) => {
       const summary = news.description
@@ -71,20 +74,58 @@ const render = () => {
 
       const imageHTML = news.urlToImage
         ? `<img class="news-img-size" 
-        src="${news.urlToImage}" 
-        alt="news image" 
-        onerror="
-          this.onerror=null; 
-          this.outerHTML=
-           '<div class=\\'no-image\\'>\
-              <p>Image Not Available</p>\
-            </div>';
-       "
-     />`
+            src="${news.urlToImage}" 
+            alt="news image" 
+            onerror="
+              this.onerror=null; 
+              this.outerHTML=
+               '<div class=\\'no-image\\'><p>Image Not Available</p></div>';
+            "
+          />`
         : `<div class="no-image">no image</div>`;
 
       const sourceName = news.source && news.source.name ? news.source.name : "no source";
+      const publishedDate = news.publishedAt ? formatRelativeDate(news.publishedAt) : "";
 
+      return `<div class="row news">
+        <div class="col-lg-4">
+          ${imageHTML}
+        </div>
+        <div class="col-lg-8">
+          <h2>${news.title}</h2>
+          <p>${summary}</p>
+          <div>
+            ${sourceName} * ${publishedDate}
+          </div>
+        </div>
+      </div>`;
+    })
+    .join("");
+  document.getElementById("new-board").innerHTML = newsHTML;
+}
+
+function renderFiltered(filteredList) {
+  const newsHTML = filteredList
+    .map((news) => {
+      const summary = news.description
+        ? news.description.length > 200
+          ? news.description.slice(0, 200) + "…"
+          : news.description
+        : "내용없음";
+
+      const imageHTML = news.urlToImage
+        ? `<img class="news-img-size" 
+             src="${news.urlToImage}" 
+             alt="news image" 
+             onerror="
+               this.onerror=null; 
+               this.outerHTML=
+                '<div class=\\'no-image\\'><p>Image Not Available</p></div>';
+             "
+           />`
+        : `<div class="no-image">no image</div>`;
+
+      const sourceName = news.source && news.source.name ? news.source.name : "no source";
       const publishedDate = news.publishedAt ? formatRelativeDate(news.publishedAt) : "";
 
       return `<div class="row news">
@@ -98,11 +139,11 @@ const render = () => {
               ${sourceName} * ${publishedDate}
             </div>
           </div>
-      </div>`;
+        </div>`;
     })
     .join("");
   document.getElementById("new-board").innerHTML = newsHTML;
-};
+}
 
 getLatestNews();
 
@@ -124,3 +165,30 @@ document.addEventListener("click", (e) => {
 searchIcon.addEventListener("click", () => {
   searchBarDiv.classList.toggle("active");
 });
+
+const searchInput = document.querySelector("#searchBar input");
+const searchButton = document.querySelector("#searchBar button");
+
+searchButton.addEventListener("click", () => {
+  performSearch();
+});
+
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    performSearch();
+  }
+});
+
+function performSearch() {
+  const term = searchInput.value.toLowerCase().trim();
+  if (term !== "") {
+    const filteredNews = newsList.filter((news) => {
+      const title = news.title ? news.title.toLowerCase() : "";
+      const description = news.description ? news.description.toLowerCase() : "";
+      return title.includes(term) || description.includes(term);
+    });
+    renderFiltered(filteredNews);
+  } else {
+    render();
+  }
+}
