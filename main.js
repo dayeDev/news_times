@@ -43,7 +43,17 @@ const render = () => {
         : "내용없음";
 
       const imageHTML = news.urlToImage
-        ? `<img class="news-img-size" src="${news.urlToImage}" alt="news image" />`
+        ? `<img class="news-img-size" 
+        src="${news.urlToImage}" 
+        alt="news image" 
+        onerror="
+          this.onerror=null; 
+          this.outerHTML=
+           '<div class=\\'no-image\\'>\
+              <p>Image Not Available</p>\
+            </div>';
+       "
+     />`
         : `<div class="no-image">no image</div>`;
 
       const sourceName = news.source && news.source.name ? news.source.name : "no source";
@@ -76,6 +86,12 @@ const searchBarDiv = document.getElementById("searchBar");
 
 hamburgerMenu.addEventListener("click", () => {
   sideMenu.classList.toggle("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (sideMenu.classList.contains("open") && !sideMenu.contains(e.target) && !hamburgerMenu.contains(e.target)) {
+    sideMenu.classList.remove("open");
+  }
 });
 
 searchIcon.addEventListener("click", () => {
