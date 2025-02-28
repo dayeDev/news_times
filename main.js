@@ -22,7 +22,7 @@ function formatRelativeDate(dateStr) {
   return diffSec + " seconds ago";
 }
 
-const API_KEY = `07eb738ae18fe42a9496b947b24b544`;
+const API_KEY = `07eb738ae18f4e42a9496b947b24b544`;
 let newsList = [];
 
 function showError(message) {
