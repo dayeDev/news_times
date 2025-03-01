@@ -14,7 +14,7 @@ function formatRelativeDate(dateStr) {
   const diffDay = Math.floor(diffHour / 24);
   const diffMonth = Math.floor(diffDay / 30);
   const diffYear = Math.floor(diffDay / 365);
-  if (diffYear > 0) return diffYear + " years ago"; 
+  if (diffYear > 0) return diffYear + " years ago";
   if (diffMonth > 0) return diffMonth + " months ago";
   if (diffDay > 0) return diffDay + " days ago";
   if (diffHour > 0) return diffHour + " hours ago";
@@ -34,7 +34,6 @@ function showError(message) {
   `;
 }
 
-
 function buildNewsHTML(list) {
   if (!list || list.length === 0) {
     return `
@@ -43,7 +42,6 @@ function buildNewsHTML(list) {
       </div>
     `;
   }
-
 
   const newsHTML = list
     .map((news) => {
@@ -86,36 +84,37 @@ function buildNewsHTML(list) {
   return newsHTML;
 }
 
-
-async function getNewsByCategory(event) {
-  const category = event.target.textContent;
-  const url = new URL(
-    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
-  );
+async function fetchNews(url) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
       const errorData = await response.json();
       const errorMsg = errorData.message || "Unknown error occurred.";
       showError(errorMsg);
-      return;
+      return null;
     }
     const data = await response.json();
-    newsList = data.articles;
-    // render() -> buildNewsHTML(newsList)
-    render();
+    return data;
   } catch (error) {
-    console.error("Error fetching category news:", error);
-    showError("Failed to load news by category.");
+    console.error("Error fetching news:", error);
+    showError("Failed to load news.");
+    return null;
   }
 }
 
+async function getLatestNews() {
+  const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`);
+  const data = await fetchNews(url);
+  if (data) {
+    newsList = data.articles;
+    render();
+  }
+}
 
 const menus = document.querySelectorAll(".menus button");
 menus.forEach((menu) => {
   menu.addEventListener("click", getNewsByCategory);
 });
-
 
 const sideMenuItems = document.querySelectorAll("#sideMenu ul li");
 sideMenuItems.forEach((item) => {
@@ -125,28 +124,17 @@ sideMenuItems.forEach((item) => {
   });
 });
 
-
-async function getLatestNews() {
+async function getNewsByCategory(event) {
+  const category = event.target.textContent;
   const url = new URL(
-    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
+    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
   );
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      const errorData = await response.json();
-      const errorMsg = errorData.message || "Unknown error occurred.";
-      showError(errorMsg);
-      return;
-    }
-    const data = await response.json();
+  const data = await fetchNews(url);
+  if (data) { 
     newsList = data.articles;
     render();
-  } catch (error) {
-    console.error("Error fetching latest news:", error);
-    showError("Failed to load latest news.");
   }
 }
-
 
 function render() {
   // ADDED/CHANGED: buildNewsHTML 사용
@@ -154,13 +142,14 @@ function render() {
   document.getElementById("new-board").innerHTML = newsHTML;
 }
 
-
 function renderFiltered(filteredList) {
-  // ADDED/CHANGED: buildNewsHTML 사용
   const newsHTML = buildNewsHTML(filteredList);
   document.getElementById("new-board").innerHTML = newsHTML;
 }
 
+function normalizeText(str) {
+  return str.replace(/[^\uAC00-\uD7A3a-zA-Z0-9]+/g, '').toLowerCase();
+}
 
 const searchInput = document.querySelector("#searchBar input");
 const searchButton = document.querySelector("#searchBar button");
@@ -175,23 +164,31 @@ searchInput.addEventListener("keydown", (e) => {
   }
 });
 
+
+
 function performSearch() {
-  const term = searchInput.value.toLowerCase().trim();
-  if (term !== "") {
-    const filteredNews = newsList.filter((news) => {
-      const title = news.title ? news.title.toLowerCase() : "";
-      const description = news.description ? news.description.toLowerCase() : "";
-      return title.includes(term) || description.includes(term);
-    });
-    renderFiltered(filteredNews);
-  } else {
+  const rawTerm = searchInput.value.trim();
+  if (rawTerm === "") {
     render();
+    return;
   }
+
+
+  const normalizedTerm = normalizeText(rawTerm);
+  const filteredNews = newsList.filter((news) => {
+    const normalizedTitle = news.title ? normalizeText(news.title) : "";
+    const normalizedDescription = news.description ? normalizeText(news.description) : "";
+    return (
+      normalizedTitle.includes(normalizedTerm) ||
+      normalizedDescription.includes(normalizedTerm)
+    );
+  });
+
+  renderFiltered(filteredNews);
 }
 
 
 getLatestNews();
-
 
 const hamburgerMenu = document.getElementById("hamburgerMenu");
 const sideMenu = document.getElementById("sideMenu");
@@ -203,11 +200,7 @@ hamburgerMenu.addEventListener("click", () => {
 });
 
 document.addEventListener("click", (e) => {
-  if (
-    sideMenu.classList.contains("open") &&
-    !sideMenu.contains(e.target) &&
-    !hamburgerMenu.contains(e.target)
-  ) {
+  if (sideMenu.classList.contains("open") && !sideMenu.contains(e.target) && !hamburgerMenu.contains(e.target)) {
     sideMenu.classList.remove("open");
   }
 });
