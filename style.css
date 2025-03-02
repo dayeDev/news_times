@@ -1,18 +1,31 @@
-.head-line{
-  margin-top : 1em;
-  display: flex;
-  justify-content: center;
+.container {
+  max-width: 1200px;
+  margin: 0 auto; /* 가운데 정렬 */
 }
 
 .head-line svg {
-  width: 430px
+  display: block;
+  margin: 0 auto;
+  width: 500px;   
+  height: auto;
+}
+
+.title{
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none; 
+}
+
+.title:hover {
+  text-decoration: none;
 }
 
 .menus {
   margin-top : 1em;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap; /* 박스안 감싸줌 */
+  flex-wrap: wrap; 
   border-top: 1px solid #ebebeb;
   border-bottom: 4px solid black;
 }
@@ -24,16 +37,20 @@
 }
 
 .menus button:hover{
-  background-color: beige;
+  background-color: #ddd;
 }
 
 
-.news-img-size{
-  max-width: 100%;
-  min-height: 250px;
+.news-img{
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  object-fit: cover;
+  padding: 1rem;
 }
 
 .news{
+  margin-bottom: 1.5rem;
   border-bottom: 2px solid black;
 }
 
@@ -126,12 +143,47 @@
   font-size: 1rem;
 }
 
+.pagination {
+  justify-content: center;
+}
+
+.page-link {
+  color: gray;
+  border-radius: 50 0%;
+  border: 1px solid rgb(216, 214, 214);
+}
+
+.page-link:hover {
+  background-color: #ddd;
+}
+
+.page-item.active .page-link {
+  background-color: #ddd;
+  border-color: #ddd;
+  color: gray;
+}
 
 @media (max-width: 768px) {
+
+  .container {
+    padding: 0 5rem; 
+  }
+
+  .news-img {
+    display: block;  
+    margin: 0 auto;
+  }
+  
+  .news {
+    padding: 1rem;
+  }
+
   .menus {
     display: none; 
   }
+
   .hamburger-menu {
     display: block;
   }
 }
+
